@@ -146,10 +146,6 @@
     gap:16px;
   }
   #qrcode{
-    background:#fff;
-    padding:8px;
-    border-radius:4px;
-    border:1px solid var(--line);
     line-height:0;
   }
   .actions{
@@ -214,7 +210,7 @@
     </div>
     <div class="actions" id="actionsBlock">
       <button class="btn btn-primary" onclick="downloadVCard()">Save Contact</button>
-      <a class="btn btn-linkedin" id="linkedinBtn" target="_blank">LinkedIn ↗</a>
+      <a class="btn btn-linkedin" id="linkedinBtn" target="_blank">LinkedIn</a>
     </div>
   </div>
 </div>
@@ -227,9 +223,9 @@ const CONFIG = {
   companyName: "Horizon Tech",
   companyAddress: "No. 9, Manjushree, West Link Road, 2nd Cross, Malleshwaram, Bangalore - 560003, Karnataka, India",
   phoneMobile: "+91 77604 98086",
-  phoneOffice: "+91 8023566141/142",
+  phoneOffice: "080 23566141/142",
   email: "shambu@horizontechb2b.com",
-  website: "https://www.horizontechb2b.com",
+  website: "https://horizontechb2b.com",
   companyLogoUrl: "https://placehold.co/104x104/EEF0F0/141A22?text=LOGO",
   linkedinUrl: "https://www.linkedin.com/in/shambulingappa-mh-16972621/",
   distributorOfName: "LG",
@@ -239,7 +235,8 @@ const CONFIG = {
 
 document.getElementById('logoImg').src = CONFIG.companyLogoUrl;
 document.getElementById('companyNameHeader').textContent = CONFIG.companyName;
-document.getElementById('fullName').textContent = CONFIG.fullName;
+const nameWords = CONFIG.fullName.trim().split(' ');
+document.getElementById('fullName').innerHTML = nameWords.slice(0, -2).join(' ') + '<br>' + nameWords.slice(-2).join(' ');
 document.getElementById('jobTitle').textContent = CONFIG.jobTitle + " — " + CONFIG.companyName;
 
 const mLink = document.getElementById('phoneMobileLink');
@@ -258,7 +255,7 @@ document.getElementById('address').textContent = CONFIG.companyAddress;
 document.getElementById('distributorLogo').src = CONFIG.distributorOfLogoUrl;
 
 const li = document.getElementById('linkedinBtn');
-li.textContent = "LinkedIn ↗"; li.href = CONFIG.linkedinUrl;
+li.textContent = "LinkedIn"; li.href = CONFIG.linkedinUrl;
 
 function buildVCard(){
   return [
@@ -288,25 +285,18 @@ function downloadVCard(){
   URL.revokeObjectURL(url);
 }
 
-// Snapshots the card into a real <img> so phones offer "Save Image" on
-// long-press (that only works on <img> elements, not styled divs).
-// Add ?jpg=1 to the URL to also force-download that snapshot as a JPG
-// (regenerate it any time by editing CONFIG above and reopening with ?jpg=1).
-async function renderCardImage(){
-  const el = document.getElementById('cardVisual');
-  const canvas = await html2canvas(el, {scale: 3, backgroundColor: '#EEF0F0'});
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-
-  if (new URLSearchParams(location.search).get('jpg') === '1') {
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = CONFIG.fullName.replace(/\s/g,'_') + "_card.jpg";
-    a.click();
-  }
-
-  el.innerHTML = `<img src="${dataUrl}" alt="${CONFIG.fullName} business card" style="display:block;width:100%;">`;
+// Add ?jpg=1 to the URL to download a JPG snapshot of the card (regenerate
+// any time by editing CONFIG above and reopening with ?jpg=1). Doesn't touch
+// the live page, so links (email/web/tel) stay clickable as normal.
+async function maybeDownloadJpg(){
+  if (new URLSearchParams(location.search).get('jpg') !== '1') return;
+  const canvas = await html2canvas(document.getElementById('cardVisual'), {scale: 3, backgroundColor: '#EEF0F0'});
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/jpeg', 0.95);
+  a.download = CONFIG.fullName.replace(/\s/g,'_') + "_card.jpg";
+  a.click();
 }
-renderCardImage();
+maybeDownloadJpg();
 
 // Points at wherever this page ends up hosted, so scanning it opens the
 // live page (image to save + Save Contact button) instead of a plain vCard.
