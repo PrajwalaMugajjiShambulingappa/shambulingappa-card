@@ -185,7 +185,8 @@
         <div class="field"><div class="label">Office</div><div class="value"><a id="phoneOfficeLink"></a></div></div>
         <div class="field"><div class="label">Email</div><div class="value"><a id="emailLink"></a></div></div>
         <div class="field"><div class="label">Web</div><div class="value"><a id="websiteLink" target="_blank"></a></div></div>
-        <div class="field"><div class="label">Address</div><div class="value" id="address"></div></div>
+        <div class="field"><div class="label">Address</div><div class="value"><a id="addressLink" target="_blank"></a></div></div>
+        <div class="field"><div class="label">Profile</div><div class="value"><a id="companyProfileLink" target="_blank">Our Capabilities</a></div></div>
       </div>
     </div>
 
@@ -218,12 +219,14 @@ const CONFIG = {
   fullName: "Shambulingappa M H",
   jobTitle: "Director",
   companyName: "Horizon Tech",
-  companyAddress: "No. 9, Manjushree, West Link Road, 2nd Cross, Malleshwaram, Bangalore - 560003, Karnataka, India",
+  companyAddress: "Manjushree, no9, W Link Rd, Malleshwaram, Bengaluru, Karnataka 560003",
+  companyMapUrl: "https://www.google.com/maps/place/Horizon+Tech+B2B+Solutions+Pvt+Ltd/@12.9953296,77.5683397,17z/data=!4m14!1m7!3m6!1s0x3bae17c24d6f4dc5:0x6cbcf5c0ae395acc!2sHorizon+Tech+B2B+Solutions+Pvt+Ltd!8m2!3d12.9953244!4d77.5732106!16s%2Fg%2F11fvmpbmgl!3m5!1s0x3bae17c24d6f4dc5:0x6cbcf5c0ae395acc!8m2!3d12.9953244!4d77.5732106!16s%2Fg%2F11fvmpbmgl?entry=ttu&g_ep=EgoyMDI2MDcxNS4wIKXMDSoASAFQAw%3D%3D",
   phoneMobile: "+91 77604 98086",
-  phoneOffice: "080 23566141/142",
+  phoneOffice: "080 23566141, 080 23566142",
   email: "shambu@horizontechb2b.com",
   website: "https://horizontechb2b.com",
   companyLogoUrl: "img-logo.jpg",
+  companyProfileUrl: "Horizon Tech PPT-2.pdf",
   linkedinUrl: "https://www.linkedin.com/in/shambulingappa-mh-16972621/",
   distributorOfName: "LG",
   distributorOfLogoUrl: "LG-Logo.png.webp"
@@ -248,7 +251,10 @@ eLink.textContent = CONFIG.email; eLink.href = "mailto:" + CONFIG.email;
 const wLink = document.getElementById('websiteLink');
 wLink.textContent = CONFIG.website.replace(/^https?:\/\//,''); wLink.href = CONFIG.website;
 
-document.getElementById('address').textContent = CONFIG.companyAddress;
+const addressLink = document.getElementById('addressLink');
+addressLink.textContent = CONFIG.companyAddress;
+addressLink.href = CONFIG.companyMapUrl;
+document.getElementById('companyProfileLink').href = CONFIG.companyProfileUrl;
 document.getElementById('distributorLogo').src = CONFIG.distributorOfLogoUrl;
 
 const li = document.getElementById('linkedinBtn');
@@ -259,7 +265,7 @@ function buildVCard(){
     "BEGIN:VCARD",
     "VERSION:3.0",
     `N:${CONFIG.fullName.split(' ').reverse().join(';')}`,
-    `FN:${CONFIG.fullName}`,
+    `FN:Shambulingappa MH - ${CONFIG.companyName}`,
     `ORG:${CONFIG.companyName}`,
     `TITLE:${CONFIG.jobTitle}`,
     `TEL;TYPE=CELL:${CONFIG.phoneMobile}`,
