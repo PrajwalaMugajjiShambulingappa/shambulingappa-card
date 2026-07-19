@@ -207,7 +207,7 @@
       <div class="scan-hint">Scan to open & save contact</div>
     </div>
     <div class="actions" id="actionsBlock">
-      <button class="btn btn-primary" onclick="downloadVCard()">Save Contact</button>
+      <a class="btn btn-primary" id="saveContactLink">Save Contact</a>
       <a class="btn btn-linkedin" id="linkedinBtn" target="_blank">LinkedIn</a>
     </div>
   </div>
@@ -279,17 +279,12 @@ function buildVCard(){
   ].join("\n");
 }
 
-function downloadVCard(){
-  const blob = new Blob([buildVCard()], {type:"text/vcard"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = CONFIG.fullName.replace(/\s/g,'_') + ".vcf";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
-}
+// A plain link to a data: URI (no download attribute, no Blob) is what
+// reliably triggers iOS's native "Add Contact" screen. Blob/JS-click
+// downloads are notoriously flaky on iOS WebKit, especially inside
+// in-app browsers (WhatsApp, Instagram, etc).
+document.getElementById('saveContactLink').href =
+  'data:text/vcard;charset=utf-8,' + encodeURIComponent(buildVCard());
 
 // Add ?jpg=1 to the URL to download a JPG snapshot of the card (regenerate
 // any time by editing CONFIG above and reopening with ?jpg=1). Doesn't touch
