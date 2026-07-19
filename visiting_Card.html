@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Visiting Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --ink:#141A22;
+    --paper:#EEF0F0;
+    --gold:#B9922F;
+    --teal:#33534B;
+    --slate:#5B6572;
+    --line: rgba(20,26,34,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+    font-family:'Inter',sans-serif;
+  }
+  .card{
+    width:420px;
+    max-width:100%;
+    background:var(--paper);
+    border-radius:4px;
+    overflow:hidden;
+    box-shadow:0 30px 60px rgba(0,0,0,0.4);
+    position:relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:5px;
+    background:linear-gradient(90deg,var(--teal),var(--gold));
+  }
+  .header{
+    padding:36px 32px 24px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    width:52px;height:52px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#fff;
+    border:1px solid var(--line);
+  }
+  .company-name{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--slate);
+  }
+  .body{
+    padding:28px 32px 8px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-size:32px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:var(--ink);
+    line-height:1.1;
+  }
+  .title{
+    font-size:14px;
+    color:var(--teal);
+    font-weight:500;
+    margin-bottom:20px;
+  }
+  .field-group{
+    margin-bottom:18px;
+  }
+  .field{
+    display:flex;
+    gap:12px;
+    font-size:13.5px;
+    color:var(--ink);
+    padding:6px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .field:last-child{border-bottom:none;}
+  .field .label{
+    width:64px;
+    flex-shrink:0;
+    color:var(--slate);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding-top:2px;
+    font-weight:500;
+  }
+  .field .value{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    word-break:break-word;
+  }
+  .field a{color:var(--ink);text-decoration:none;}
+  .field a:hover{color:var(--teal);}
+
+  .seal{
+    margin:8px 32px 0;
+    padding:14px 16px;
+    background:rgba(51,83,75,0.06);
+    border:1px solid rgba(51,83,75,0.25);
+    border-radius:4px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .seal-badge{
+    width:38px;height:38px;
+    border-radius:50%;
+    border:2px solid var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:#fff;
+  }
+  .seal-badge svg{width:18px;height:18px;stroke:var(--gold);}
+  .seal-text{font-size:11.5px;line-height:1.4;color:var(--ink);}
+  .seal-text strong{color:var(--teal);}
+  .seal img{height:20px;vertical-align:middle;margin-left:4px;}
+
+  .footer{
+    padding:24px 32px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  #qrcode{
+    background:#fff;
+    padding:8px;
+    border-radius:4px;
+    border:1px solid var(--line);
+    line-height:0;
+  }
+  .actions{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:flex-end;
+  }
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    padding:10px 16px;
+    border-radius:3px;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    text-align:center;
+  }
+  .btn-primary{background:var(--ink);color:var(--paper);}
+  .btn-linkedin{background:transparent;color:var(--teal);border:1px solid var(--teal);}
+  .scan-hint{font-size:10.5px;color:var(--slate);text-align:center;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="cardVisual">
+    <div class="header">
+      <img class="logo" id="logoImg" alt="Company logo">
+      <div class="company-name" id="companyNameHeader"></div>
+    </div>
+
+    <div class="body">
+      <h1 id="fullName"></h1>
+      <div class="title" id="jobTitle"></div>
+
+      <div class="field-group">
+        <div class="field"><div class="label">Mobile</div><div class="value"><a id="phoneMobileLink"></a></div></div>
+        <div class="field"><div class="label">Office</div><div class="value"><a id="phoneOfficeLink"></a></div></div>
+        <div class="field"><div class="label">Email</div><div class="value"><a id="emailLink"></a></div></div>
+        <div class="field"><div class="label">Web</div><div class="value"><a id="websiteLink" target="_blank"></a></div></div>
+        <div class="field"><div class="label">Address</div><div class="value" id="address"></div></div>
+      </div>
+    </div>
+
+    <div class="seal">
+      <div class="seal-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 5.6L21 8.3l-4.5 4.2 1.1 6.2L12 15.8 6.4 18.7l1.1-6.2L3 8.3l6.4-.7z"/></svg>
+      </div>
+      <div class="seal-text">
+        Authorised Regional Distributor for<br>
+        <img id="distributorLogo" alt="Partner logo">
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <div id="qrcode"></div>
+      <div class="scan-hint">Scan to open & save contact</div>
+    </div>
+    <div class="actions" id="actionsBlock">
+      <button class="btn btn-primary" onclick="downloadVCard()">Save Contact</button>
+      <a class="btn btn-linkedin" id="linkedinBtn" target="_blank">LinkedIn ↗</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ EDIT THIS BLOCK WITH YOUR REAL DETAILS ============
+const CONFIG = {
+  fullName: "Shambulingappa M H",
+  jobTitle: "Director",
+  companyName: "Horizon Tech",
+  companyAddress: "No. 9, Manjushree, West Link Road, 2nd Cross, Malleshwaram, Bangalore - 560003, Karnataka, India",
+  phoneMobile: "+91 77604 98086",
+  phoneOffice: "+91 8023566141/142",
+  email: "shambu@horizontechb2b.com",
+  website: "https://www.horizontechb2b.com",
+  companyLogoUrl: "https://placehold.co/104x104/EEF0F0/141A22?text=LOGO",
+  linkedinUrl: "https://www.linkedin.com/in/shambulingappa-mh-16972621/",
+  distributorOfName: "LG",
+  distributorOfLogoUrl: "LG-Logo.png.webp"
+};
+// ==================================================================
+
+document.getElementById('logoImg').src = CONFIG.companyLogoUrl;
+document.getElementById('companyNameHeader').textContent = CONFIG.companyName;
+document.getElementById('fullName').textContent = CONFIG.fullName;
+document.getElementById('jobTitle').textContent = CONFIG.jobTitle + " — " + CONFIG.companyName;
+
+const mLink = document.getElementById('phoneMobileLink');
+mLink.textContent = CONFIG.phoneMobile; mLink.href = "tel:" + CONFIG.phoneMobile.replace(/\s/g,'');
+
+const oLink = document.getElementById('phoneOfficeLink');
+oLink.textContent = CONFIG.phoneOffice; oLink.href = "tel:" + CONFIG.phoneOffice.replace(/\s/g,'');
+
+const eLink = document.getElementById('emailLink');
+eLink.textContent = CONFIG.email; eLink.href = "mailto:" + CONFIG.email;
+
+const wLink = document.getElementById('websiteLink');
+wLink.textContent = CONFIG.website.replace(/^https?:\/\//,''); wLink.href = CONFIG.website;
+
+document.getElementById('address').textContent = CONFIG.companyAddress;
+document.getElementById('distributorLogo').src = CONFIG.distributorOfLogoUrl;
+
+const li = document.getElementById('linkedinBtn');
+li.textContent = "LinkedIn ↗"; li.href = CONFIG.linkedinUrl;
+
+function buildVCard(){
+  return [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `N:${CONFIG.fullName.split(' ').reverse().join(';')}`,
+    `FN:${CONFIG.fullName}`,
+    `ORG:${CONFIG.companyName}`,
+    `TITLE:${CONFIG.jobTitle}`,
+    `TEL;TYPE=CELL:${CONFIG.phoneMobile}`,
+    `TEL;TYPE=WORK:${CONFIG.phoneOffice}`,
+    `EMAIL:${CONFIG.email}`,
+    `URL:${CONFIG.website}`,
+    `ADR;TYPE=WORK:;;${CONFIG.companyAddress.replace(/,/g,';')}`,
+    `URL;TYPE=LinkedIn:${CONFIG.linkedinUrl}`,
+    "END:VCARD"
+  ].join("\n");
+}
+
+function downloadVCard(){
+  const blob = new Blob([buildVCard()], {type:"text/vcard"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = CONFIG.fullName.replace(/\s/g,'_') + ".vcf";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Snapshots the card into a real <img> so phones offer "Save Image" on
+// long-press (that only works on <img> elements, not styled divs).
+// Add ?jpg=1 to the URL to also force-download that snapshot as a JPG
+// (regenerate it any time by editing CONFIG above and reopening with ?jpg=1).
+async function renderCardImage(){
+  const el = document.getElementById('cardVisual');
+  const canvas = await html2canvas(el, {scale: 3, backgroundColor: '#EEF0F0'});
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+
+  if (new URLSearchParams(location.search).get('jpg') === '1') {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = CONFIG.fullName.replace(/\s/g,'_') + "_card.jpg";
+    a.click();
+  }
+
+  el.innerHTML = `<img src="${dataUrl}" alt="${CONFIG.fullName} business card" style="display:block;width:100%;">`;
+}
+renderCardImage();
+
+// Points at wherever this page ends up hosted, so scanning it opens the
+// live page (image to save + Save Contact button) instead of a plain vCard.
+// (Won't resolve to anything for other phones until this file is hosted
+// at a real URL instead of opened as a local file://.)
+new QRCode(document.getElementById("qrcode"), {
+  text: location.href.split(/[?#]/)[0],
+  width: 96,
+  height: 96,
+  colorDark: "#141A22",
+  colorLight: "#ffffff"
+});
+// qrcodejs has a known bug where its <canvas> render gets extra blank
+// space on high-DPI screens; it also draws a correct fallback <img> that
+// it just leaves hidden, so use that instead.
+document.querySelectorAll('#qrcode canvas').forEach(c => c.style.display = 'none');
+document.querySelectorAll('#qrcode img').forEach(i => i.style.display = 'block');
+</script>
+</body>
+</html>
