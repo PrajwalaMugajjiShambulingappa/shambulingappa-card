@@ -6,8 +6,8 @@
 <title>Digital Visiting Card</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="qrcode.min.js"></script>
+<script src="html2canvas.min.js"></script>
 <style>
   :root{
     --ink:#141A22;
@@ -273,8 +273,8 @@ function buildVCard(){
     ...CONFIG.phoneOffice.map(num => `TEL;TYPE=WORK:${num}`),
     `EMAIL:${CONFIG.email}`,
     `URL:${CONFIG.website}`,
-    `ADR;TYPE=WORK:;;${CONFIG.companyAddress.replace(/,/g,';')}`,
-    `URL;TYPE=LinkedIn:${CONFIG.linkedinUrl}`,
+    `ADR;TYPE=WORK:;;${CONFIG.companyAddress}`,
+    `URL:${CONFIG.linkedinUrl}`,
     "END:VCARD"
   ].join("\n");
 }
