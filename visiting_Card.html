@@ -182,7 +182,7 @@
 
       <div class="field-group">
         <div class="field"><div class="label">Mobile</div><div class="value"><a id="phoneMobileLink"></a></div></div>
-        <div class="field"><div class="label">Office</div><div class="value"><a id="phoneOfficeLink"></a></div></div>
+        <div class="field"><div class="label">Office</div><div class="value" id="phoneOfficeValue"></div></div>
         <div class="field"><div class="label">Email</div><div class="value"><a id="emailLink"></a></div></div>
         <div class="field"><div class="label">Web</div><div class="value"><a id="websiteLink" target="_blank"></a></div></div>
         <div class="field"><div class="label">Address</div><div class="value"><a id="addressLink" target="_blank"></a></div></div>
@@ -222,7 +222,7 @@ const CONFIG = {
   companyAddress: "Manjushree, no9, W Link Rd, Malleshwaram, Bengaluru, Karnataka 560003",
   companyMapUrl: "https://www.google.com/maps/place/Horizon+Tech+B2B+Solutions+Pvt+Ltd/@12.9953296,77.5683397,17z/data=!4m14!1m7!3m6!1s0x3bae17c24d6f4dc5:0x6cbcf5c0ae395acc!2sHorizon+Tech+B2B+Solutions+Pvt+Ltd!8m2!3d12.9953244!4d77.5732106!16s%2Fg%2F11fvmpbmgl!3m5!1s0x3bae17c24d6f4dc5:0x6cbcf5c0ae395acc!8m2!3d12.9953244!4d77.5732106!16s%2Fg%2F11fvmpbmgl?entry=ttu&g_ep=EgoyMDI2MDcxNS4wIKXMDSoASAFQAw%3D%3D",
   phoneMobile: "+91 77604 98086",
-  phoneOffice: "080 23566141, 080 23566142",
+  phoneOffice: ["080 23566141", "080 23566142"],
   email: "shambu@horizontechb2b.com",
   website: "https://horizontechb2b.com",
   companyLogoUrl: "img-logo.jpg",
@@ -242,8 +242,9 @@ document.getElementById('jobTitle').textContent = CONFIG.jobTitle + " — " + CO
 const mLink = document.getElementById('phoneMobileLink');
 mLink.textContent = CONFIG.phoneMobile; mLink.href = "tel:" + CONFIG.phoneMobile.replace(/\s/g,'');
 
-const oLink = document.getElementById('phoneOfficeLink');
-oLink.textContent = CONFIG.phoneOffice; oLink.href = "tel:" + CONFIG.phoneOffice.replace(/\s/g,'');
+document.getElementById('phoneOfficeValue').innerHTML = CONFIG.phoneOffice
+  .map(num => `<a href="tel:${num.replace(/\s/g,'')}">${num}</a>`)
+  .join(', ');
 
 const eLink = document.getElementById('emailLink');
 eLink.textContent = CONFIG.email; eLink.href = "mailto:" + CONFIG.email;
@@ -269,7 +270,7 @@ function buildVCard(){
     `ORG:${CONFIG.companyName}`,
     `TITLE:${CONFIG.jobTitle}`,
     `TEL;TYPE=CELL:${CONFIG.phoneMobile}`,
-    `TEL;TYPE=WORK:${CONFIG.phoneOffice}`,
+    ...CONFIG.phoneOffice.map(num => `TEL;TYPE=WORK:${num}`),
     `EMAIL:${CONFIG.email}`,
     `URL:${CONFIG.website}`,
     `ADR;TYPE=WORK:;;${CONFIG.companyAddress.replace(/,/g,';')}`,
