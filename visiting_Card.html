@@ -279,19 +279,15 @@ function buildVCard(){
   ].join("\n");
 }
 
-// iOS: a plain data: URI (no download attribute, no Blob) reliably triggers
-// the native "Add Contact" screen; adding `download` makes iOS just download
-// the file instead. Android: the opposite — Chrome shows/blocks a bare data:
-// link instead of saving, so it needs a Blob + download="*.vcf" (tapping the
-// downloaded file notification opens it in Contacts).
-const saveLink = document.getElementById('saveContactLink');
-const vcard = buildVCard();
-if (/iP(hone|od|ad)/.test(navigator.userAgent)) {
-  saveLink.href = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcard);
-} else {
-  saveLink.href = URL.createObjectURL(new Blob([vcard], {type: 'text/vcard'}));
-  saveLink.download = CONFIG.fullName.replace(/\s/g,'_') + '.vcf';
-}
+// data:/blob: links get blocked or silently fail to actually save inside
+// in-app browsers (WhatsApp, Instagram, etc. — iOS WKWebView sandboxes those
+// schemes). A real hosted .vcf file is the only thing that reliably triggers
+// Add-to-Contacts everywhere, so link straight to the static file below.
+// NOTE: contact.vcf is generated from CONFIG above — if you edit CONFIG,
+// regenerate contact.vcf to match. buildVCard() below always reflects the
+// current CONFIG, so its output is logged here to make that copy-paste easy.
+document.getElementById('saveContactLink').href = 'contact.vcf';
+console.log('contact.vcf contents:\n' + buildVCard());
 
 // Add ?jpg=1 to the URL to download a JPG snapshot of the card (regenerate
 // any time by editing CONFIG above and reopening with ?jpg=1). Doesn't touch
