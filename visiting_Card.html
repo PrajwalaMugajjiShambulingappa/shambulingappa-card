@@ -285,8 +285,10 @@ function downloadVCard(){
   const a = document.createElement('a');
   a.href = url;
   a.download = CONFIG.fullName.replace(/\s/g,'_') + ".vcf";
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
 // Add ?jpg=1 to the URL to download a JPG snapshot of the card (regenerate
